@@ -1,4 +1,4 @@
-package michael_ray.webs.com.busumich;
+package michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.adapters;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -7,6 +7,8 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.SparseArray;
 import android.view.ViewGroup;
+
+import michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.fragments.HomeFragment;
 
 public class TabsAdapter extends FragmentPagerAdapter {
     private SparseArray<Fragment> registeredFragments = new SparseArray<Fragment>();

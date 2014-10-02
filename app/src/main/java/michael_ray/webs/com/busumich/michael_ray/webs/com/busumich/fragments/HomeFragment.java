@@ -1,4 +1,4 @@
-package michael_ray.webs.com.busumich;
+package michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.fragments;
 
 import android.app.Activity;
 import android.net.Uri;
@@ -7,6 +7,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import michael_ray.webs.com.busumich.R;
 
 
 public class HomeFragment extends Fragment {

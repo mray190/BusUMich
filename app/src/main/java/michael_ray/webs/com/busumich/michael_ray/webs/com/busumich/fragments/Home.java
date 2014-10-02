@@ -1,4 +1,4 @@
-package michael_ray.webs.com.busumich;
+package michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.fragments;
 
 import android.app.ActionBar;
 import android.os.Bundle;
@@ -8,6 +8,9 @@ import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+
+import michael_ray.webs.com.busumich.R;
+import michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.adapters.TabsAdapter;
 
 public class Home extends FragmentActivity implements ActionBar.TabListener {
 
@@ -93,12 +96,8 @@ public class Home extends FragmentActivity implements ActionBar.TabListener {
     }
 
     @Override
-    public void onTabUnselected(ActionBar.Tab tab, android.app.FragmentTransaction ft) {
-
-    }
+    public void onTabUnselected(ActionBar.Tab tab, android.app.FragmentTransaction ft) { }
 
     @Override
-    public void onTabReselected(ActionBar.Tab tab, android.app.FragmentTransaction ft) {
-
-    }
+    public void onTabReselected(ActionBar.Tab tab, android.app.FragmentTransaction ft) { }
 }
