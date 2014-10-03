@@ -7,5 +7,6 @@
     <string name="tab2">Tab 2</string>
     <string name="tab3">Tab 3</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_map">Map</string>
 
 </resources>

@@ -1,7 +1,7 @@
 package michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.fragments;
 
 import android.app.ActionBar;
-import android.os.AsyncTask;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -12,7 +12,6 @@ import android.view.MenuItem;
 
 import michael_ray.webs.com.busumich.R;
 import michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.adapters.TabsAdapter;
-import michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.logic.Parser;
 
 /**
  * Home.java
@@ -36,7 +35,7 @@ public class Home extends FragmentActivity implements ActionBar.TabListener {
         actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         actionBar.setTitle(getResources().getString(R.string.app_name));
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(false);
 
         FragmentManager fm = getSupportFragmentManager();
         //Creates a Pager view and sets a listener and adapter to monitor swipes
@@ -71,19 +70,6 @@ public class Home extends FragmentActivity implements ActionBar.TabListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         managePageNavigation();
-        Test tester = new Test();
-        tester.execute();
-    }
-
-    class Test extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void...params) {
-            Parser parser = new Parser();
-            parser.getBuses();
-            return null;
-        }
-        @Override
-        protected void onPostExecute(Void result) { }
     }
 
     @Override
@@ -95,15 +81,15 @@ public class Home extends FragmentActivity implements ActionBar.TabListener {
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        return true;
-    }
-
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_settings:
+                return true;
+            case R.id.action_map:
+                Intent intent = new Intent(this, Map.class);
+                startActivity(intent);
+                return true;
+            case R.id.action_refresh:
                 return true;
         }
         return super.onOptionsItemSelected(item);

@@ -2,8 +2,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".Home" >
+    <item android:id="@+id/action_map"
+        android:title="Map"
+        android:icon="@drawable/ic_map"
+        android:showAsAction="always"
+        android:orderInCategory="99"
+        tools:ignore="AppCompatResource" />
     <item android:id="@+id/action_settings"
         android:title="@string/action_settings"
         android:orderInCategory="100"
         app:showAsAction="never" />
+    <item android:id="@+id/action_refresh"
+        android:title="Refresh"
+        android:icon="@drawable/ic_refresh"
+        android:showAsAction="always"
+        android:orderInCategory="98"
+        tools:ignore="AppCompatResource" />
 </menu>

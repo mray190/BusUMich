@@ -1,5 +1,7 @@
 package michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.logic;
 
+import java.io.Serializable;
+
 /**
  * Bus.java
  * Stores information regarding each bus
@@ -7,7 +9,7 @@ package michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.logic;
  * @version 1
  * @since 10-02-14
  */
-public class Bus {
+public class Bus implements Serializable {
     private int id, heading, route, lastStop, lastTime;
     private String name;
     private double lat, lon;
