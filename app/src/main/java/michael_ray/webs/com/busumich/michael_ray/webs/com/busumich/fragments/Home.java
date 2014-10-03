@@ -1,6 +1,7 @@
 package michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.fragments;
 
 import android.app.ActionBar;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -11,6 +12,7 @@ import android.view.MenuItem;
 
 import michael_ray.webs.com.busumich.R;
 import michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.adapters.TabsAdapter;
+import michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.logic.Parser;
 
 /**
  * Home.java
@@ -69,6 +71,19 @@ public class Home extends FragmentActivity implements ActionBar.TabListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         managePageNavigation();
+        Test tester = new Test();
+        tester.execute();
+    }
+
+    class Test extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void...params) {
+            Parser parser = new Parser();
+            parser.getBuses();
+            return null;
+        }
+        @Override
+        protected void onPostExecute(Void result) { }
     }
 
     @Override
