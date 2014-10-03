@@ -12,17 +12,21 @@ import android.view.MenuItem;
 import michael_ray.webs.com.busumich.R;
 import michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.adapters.TabsAdapter;
 
+/**
+ * Home.java
+ * Home screen that manages the fragments and general activity
+ * @author Michael Ray
+ * @version 1
+ * @since 10-02-14
+ */
 public class Home extends FragmentActivity implements ActionBar.TabListener {
 
     private ViewPager mPager;
     private TabsAdapter mPagerAdapter;
     private ActionBar actionBar;
 
-    /*
-	 * Manages the navigation, fragments and panels for swipey tabs and action bar menus
-	 * PreCondtion: Title has been determined and a view exists to put the content
-	 * @param Title a string representing the title of the interface
-	 * @return void
+    /**
+	 * Manages the navigation, fragments and panels for swipe tabs and action bar menus
 	 */
     private void managePageNavigation() {
         mPager = (ViewPager) findViewById(R.id.pager);
