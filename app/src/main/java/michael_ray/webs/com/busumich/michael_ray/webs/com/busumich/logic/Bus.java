@@ -7,12 +7,13 @@ import java.io.Serializable;
  * Stores information regarding each bus
  * @author Michael Ray
  * @version 1
- * @since 10-02-14
+ * @since 10-09-14
  */
 public class Bus implements Serializable {
     private int id, heading, route, lastStop, lastTime;
     private String name;
     private double lat, lon;
+    private BusRoute busRoute;
 
     public Bus(int id, String name, int heading, int route, int lastStop, int lastTime, double lat, double lon) {
         this.id = id;
@@ -42,4 +43,7 @@ public class Bus implements Serializable {
     public void setRoute(int route) { this.route = route; }
     public void setLastStop(int lastStop) { this.lastStop = lastStop; }
     public void setLastTime(int lastTime) { this.lastTime = lastTime; }
+
+    public BusRoute getBusRoute() { return this.busRoute; }
+    public void setBusRoute(BusRoute route) { this.busRoute = route; }
 }

@@ -1,7 +1,7 @@
 package michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.fragments;
 
 import android.app.ActionBar;
-import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -58,6 +58,10 @@ public class Map extends FragmentActivity {
                 return true;
             case R.id.action_refresh:
                 setUpMap(false);
+                return true;
+            case R.id.home:
+                Intent goHome = new Intent(this, Home.class);
+                startActivity(goHome);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -71,16 +75,14 @@ public class Map extends FragmentActivity {
     }
 
     private void setUpMap(boolean cond) {
-        Test tester = new Test(this, cond);
+        Refresh tester = new Refresh(cond);
         tester.execute();
     }
 
-    class Test extends AsyncTask<Void, Void, ArrayList<Bus>> {
-        private Context context;
+    class Refresh extends AsyncTask<Void, Void, ArrayList<Bus>> {
         private boolean condition;
-        public Test(Context context, boolean cond) {
+        public Refresh(boolean cond) {
             condition = cond;
-            this.context = context;
         }
         @Override
         protected ArrayList<Bus> doInBackground(Void...params) {
@@ -91,9 +93,8 @@ public class Map extends FragmentActivity {
         @Override
         protected void onPostExecute(ArrayList<Bus> buses) {
             mMap.clear();
-            for (int i = 0; i < buses.size(); i++) {
+            for (int i = 0; i < buses.size(); i++)
                 mMap.addMarker(new MarkerOptions().position(new LatLng(buses.get(i).getLat(), buses.get(i).getLon())).title(buses.get(i).getName()));
-            }
             if (condition)
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(buses.get(0).getLat(), buses.get(0).getLon()), 15));
         }

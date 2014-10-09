@@ -60,10 +60,37 @@ public class Parser {
         return buses;
     }
 
+    public ArrayList<BusRoute> getRoutes() {
+        ArrayList<BusRoute> routes = new ArrayList<BusRoute>();
+        try {
+            String url = "http://mbus.doublemap.com/map/v2/routes";
+            JSONArray json = new JSONArray(pullData(url));
+            for (int i=0; i<json.length(); i++) {
+                int id = json.getJSONObject(i).getInt("id");
+                String name = json.getJSONObject(i).getString("name");
+                String short_name = json.getJSONObject(i).getString("short_name");
+                String description = json.getJSONObject(i).getString("description");
+                String color = json.getJSONObject(i).getString("color");
+                JSONArray patharray = json.getJSONObject(i).getJSONArray("path");
+                double[] path = new double[patharray.length()];
+                for (int j=0; j<path.length; j++)
+                    path[j] = patharray.getDouble(j);
+                String schedule_url = json.getJSONObject(i).getString("schedule_url");
+                boolean active = json.getJSONObject(i).getBoolean("active");
+                JSONArray stoparray = json.getJSONObject(i).getJSONArray("path");
+                int[] stops = new int[stoparray.length()];
+                for (int j=0; j<stops.length; j++)
+                    stops[j] = stoparray.getInt(j);
+                BusRoute busroute = new BusRoute(id,name,short_name,description,color,path,schedule_url,active,stops);
+                routes.add(busroute);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.d("BusUMich", "Error parsing BusRoute json. Method: getRoutes");
+        }
+        return routes;
+    }
 }
-
-//Data regarding bus routes:
-//http://mbus.doublemap.com/map/v2/routes
 
 //Data regarding bus stops:
 //http://mbus.doublemap.com/map/v2/stops
