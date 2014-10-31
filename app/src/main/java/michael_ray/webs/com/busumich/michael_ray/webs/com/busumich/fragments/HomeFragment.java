@@ -52,7 +52,7 @@ public class HomeFragment extends ListFragment {
         @Override
         protected ArrayList<Bus> doInBackground(BusStop...params) {
             Parser parser = new Parser();
-            return parser.calcClosestBuses(params[0]);
+            return parser.getClosestBuses(params[0]);
         }
 
         @Override

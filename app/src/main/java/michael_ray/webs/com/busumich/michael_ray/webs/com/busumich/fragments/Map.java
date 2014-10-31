@@ -121,9 +121,6 @@ public class Map extends FragmentActivity implements GooglePlayServicesClient.Co
         @Override
         protected ArrayList<Bus> doInBackground(Void...params) {
             Parser parser = new Parser();
-            parser.calcBuses();
-            parser.calcRoutes();
-            parser.assignRoutes();
             return parser.getBuses();
         }
 

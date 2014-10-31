@@ -127,6 +127,8 @@ public class Home extends FragmentActivity implements ActionBar.TabListener, Goo
     @Override
     public void onConnected(Bundle bundle) {
         myLocation = mLocationClient.getLastLocation();
+        Refresh refresh = new Refresh();
+        refresh.execute();
     }
 
     @Override
@@ -143,10 +145,8 @@ public class Home extends FragmentActivity implements ActionBar.TabListener, Goo
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        managePageNavigation();
         mLocationClient = new LocationClient(this, this, this);
-        Refresh refresh = new Refresh();
-        refresh.execute();
+        managePageNavigation();
     }
 
     @Override
@@ -169,7 +169,6 @@ public class Home extends FragmentActivity implements ActionBar.TabListener, Goo
         @Override
         protected ArrayList<BusStop> doInBackground(Void...params) {
             Parser parser = new Parser();
-            parser.calcStops();
             return parser.getClosestStops(myLocation);
         }
 

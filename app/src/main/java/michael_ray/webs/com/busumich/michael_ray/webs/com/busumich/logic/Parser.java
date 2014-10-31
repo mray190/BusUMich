@@ -21,15 +21,6 @@ import java.util.Collections;
  * @since 10-02-14
  */
 public class Parser {
-    private ArrayList<Bus> buses;
-    private ArrayList<BusRoute> routes;
-    private ArrayList<BusStop> stops;
-
-    public Parser() {
-        this.buses = new ArrayList<Bus>();
-        this.routes = new ArrayList<BusRoute>();
-        this.stops = new ArrayList<BusStop>();
-    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //Logic for parser methods
@@ -59,11 +50,10 @@ public class Parser {
 
     /**
      * Gets all of the Buses from the DoubleMap API
-     * Modifies: buses (ArrayList<Bus>)
-     * @return boolean if the parser executed correctly without errors
+     * @return list of buses
      */
-    public boolean calcBuses() {
-        buses.clear();
+    private ArrayList<Bus> calcBuses() {
+        ArrayList<Bus> buses = new ArrayList<Bus>();
         try {
             String url = "http://mbus.doublemap.com/map/v2/buses";
             JSONArray json = new JSONArray(pullData(url));
@@ -82,18 +72,16 @@ public class Parser {
         } catch (Exception e) {
             e.printStackTrace();
             Log.d("BusUMich", "Error parsing Bus json. Method: calcBuses");
-            return false;
         }
-        return true;
+        return buses;
     }
 
     /**
      * Gets all of the Routes from the DoubleMap API
-     * Modifies: routes (ArrayList<BusRoutes>)
-     * @return boolean if the parser executed correctly without errors
+     * @return list of bus routes
      */
-    public boolean calcRoutes() {
-        routes.clear();
+    private ArrayList<BusRoute> calcRoutes() {
+        ArrayList<BusRoute> routes = new ArrayList<BusRoute>();
         try {
             String url = "http://mbus.doublemap.com/map/v2/routes";
             JSONArray json = new JSONArray(pullData(url));
@@ -119,18 +107,16 @@ public class Parser {
         } catch (Exception e) {
             e.printStackTrace();
             Log.d("BusUMich", "Error parsing BusRoute json. Method: calcRoutes");
-            return false;
         }
-        return true;
+        return routes;
     }
 
     /**
      * Gets all of the Stops from the DoubleMap API
-     * Modifies: stops (ArrayList<BusStop>)
-     * @return boolean if the parser executed correctly without errors
+     * @return list of bus stops
      */
-    public boolean calcStops() {
-        stops.clear();
+    private ArrayList<BusStop> calcStops() {
+        ArrayList<BusStop> stops = new ArrayList<BusStop>();
         try {
             String url = "http://mbus.doublemap.com/map/v2/stops";
             JSONArray json = new JSONArray(pullData(url));
@@ -146,18 +132,17 @@ public class Parser {
         } catch (Exception e) {
             e.printStackTrace();
             Log.d("BusUMich", "Error parsing BusStop json. Method: calcStops");
-            return false;
         }
-        return true;
+        return stops;
     }
 
     /**
      * Gets all of the Buses from the DoubleMap API that are closest to stop
-     * @param stop which is the stop to get the buses from
+     * @param stop which is the closest bus stop to the user
      * @return buses which is the array list of closest buses
      */
-    public ArrayList<Bus> calcClosestBuses(BusStop stop) {
-        ArrayList<Bus> buses = new ArrayList<Bus>();
+    private ArrayList<Bus> calcClosestBuses(BusStop stop, ArrayList<Bus> all_buses) {
+        ArrayList<Bus> filtered_buses = new ArrayList<Bus>();
         try {
             String url = "http://mbus.doublemap.com/map/v2/eta?stop=" + Integer.toString(stop.getId());
             JSONArray json = new JSONObject(pullData(url)).getJSONObject("etas").getJSONObject(Integer.toString(stop.getId())).getJSONArray("etas");
@@ -166,43 +151,79 @@ public class Parser {
                 if (!(type.equals("schedule"))) {
                     int id = json.getJSONObject(i).getInt("bus_id");
                     int avg = json.getJSONObject(i).getInt("avg");
-                    calcBuses();
                     Bus bus = null;
-                    for (int j = 0; j < this.buses.size(); j++) {
-                        if (this.buses.get(j).getId() == id) {
-                            bus = this.buses.get(j);
+                    for (int j = 0; j < all_buses.size(); j++) {
+                        if (all_buses.get(j).getId() == id) {
+                            bus = all_buses.get(j);
                             bus.setEta(avg);
                             break;
                         }
                     }
                     if (bus != null)
-                        buses.add(bus);
+                        filtered_buses.add(bus);
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
             Log.d("BusUMich", "Error parsing ETA json. Method: calcClosestBuses");
         }
-        Log.d("MyApp",Integer.toString(buses.size()));
-        return buses;
+        return filtered_buses;
     }
 
     /**
-     * Assigns the buses the correct route that it is running from the DoubleMap API
-     * Modifies: buses (ArrayList<Bus>) and routes (ArrayList<BusRoute>)
+     * Adds the current route object and the last stop object to all of the bus objects
+     * @param buses list of buses
+     * @param routes list of routes
+     * @param stops list of stops
+     * @return list of buses with the associated route and stop data
      */
-    public void assignRoutes() {
+    private ArrayList<Bus> correlateBuses(ArrayList<Bus> buses, ArrayList<BusRoute> routes, ArrayList<BusStop> stops) {
         for (int i=0; i<buses.size(); i++) {
             for (int j=0; j<routes.size(); j++) {
                 if (buses.get(i).getRoute() == routes.get(j).getId()) {
                     buses.get(i).setBusRoute(routes.get(j));
-                    routes.get(j).addBus(buses.get(i), true);
+                    break;
+                }
+            }
+            for (int j=0; j<stops.size(); j++) {
+                if (buses.get(i).getLastStop() == stops.get(j).getId()) {
+                    buses.get(i).setLastBusStop(stops.get(j));
+                    //WRONG IMPLEMENTATION - edit this later
+                    buses.get(i).setNextBusStop(stops.get(j));
+                    break;
                 }
             }
         }
+        return buses;
     }
 
-    public ArrayList<BusStop> getClosestStops(Location location) {
+    /**
+     * Adds the stop objects and the bus objects to all of the bus route objects
+     * @param buses list of buses
+     * @param routes list of routes
+     * @return list of bus routes with the associated stop and bus data
+     */
+    private ArrayList<BusRoute> correlateRoutes(ArrayList<Bus> buses, ArrayList<BusRoute> routes) {
+        for (int i=0; i<routes.size(); i++) {
+            routes.get(i).setBuses(new ArrayList<Bus>());
+            for (int j=0; j<buses.size(); j++) {
+                if (routes.get(i).getId() == buses.get(j).getRoute()) {
+                    routes.get(i).addBus(buses.get(j), true);
+                }
+            }
+        }
+        return routes;
+    }
+
+    /**
+     * Calculates a list of closest bus stops to a specific location
+     * @param location Users location
+     * @param stops list of stops
+     * @return list of sorted bus stops with closest to location on top (index of 0)
+     */
+    private ArrayList<BusStop> calcClosestStops(Location location, ArrayList<BusStop> stops) {
+        if (location==null)
+            return new ArrayList<BusStop>();
         for (int i=0; i<stops.size(); i++) {
             double distance = Math.sqrt(Math.pow(location.getLatitude() - stops.get(i).getLat(),2) + Math.pow(location.getLongitude() - stops.get(i).getLon(),2));
             stops.get(i).setDistance(distance);
@@ -215,13 +236,9 @@ public class Parser {
     //Getter methods
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public ArrayList<Bus> getBuses() { return this.buses; }
-    public ArrayList<BusRoute> getRoutes() { return this.routes; }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    //Setter methods
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    public void setBuses(ArrayList<Bus> buses) { this.buses = buses; }
-    public void setRoutes(ArrayList<BusRoute> routes) { this.routes = routes; }
+    public ArrayList<Bus> getBuses() { return correlateBuses(calcBuses(),calcRoutes(),calcStops()); }
+    public ArrayList<BusRoute> getRoutes() { return correlateRoutes(calcBuses(),calcRoutes()); }
+    public ArrayList<BusStop> getStops() { return calcStops(); }
+    public ArrayList<BusStop> getClosestStops(Location location) { return calcClosestStops(location, getStops()); }
+    public ArrayList<Bus> getClosestBuses(BusStop stop) { return calcClosestBuses(stop,getBuses());}
 }

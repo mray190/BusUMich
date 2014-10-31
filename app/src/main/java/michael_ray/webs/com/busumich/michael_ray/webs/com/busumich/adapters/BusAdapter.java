@@ -40,7 +40,7 @@ public class BusAdapter extends ArrayAdapter<Bus> {
             row = inflater.inflate(layoutResourceId, parent, false);
             holder = new BusHolder();
             //holder.idTxt = (TextView)row.findViewById(R.id.idTxt);
-            holder.busNameTxt = (TextView)row.findViewById(R.id.busNameTxt);
+            //holder.busNameTxt = (TextView)row.findViewById(R.id.busNameTxt);
             //holder.headingTxt = (TextView)row.findViewById(R.id.descTxt);
             holder.routeTxt = (TextView)row.findViewById(R.id.routeTxt);
             holder.lastStopTxt = (TextView)row.findViewById(R.id.lastStopTxt);
@@ -54,10 +54,10 @@ public class BusAdapter extends ArrayAdapter<Bus> {
         }
         Bus bus = data.get(position);
         //holder.idTxt.setText(bus.getId());
-        holder.busNameTxt.setText(bus.getName());
+        //holder.busNameTxt.setText(bus.getName());
         //holder.headingTxt.setText(bus.getHeading());
-        holder.routeTxt.setText("Route: " + Integer.toString(bus.getRoute()));
-        holder.lastStopTxt.setText("Last stop: " + Integer.toString(bus.getLastStop()));
+        holder.routeTxt.setText("Route: " + bus.getBusRoute().getName());
+        holder.lastStopTxt.setText("Last stop: " + bus.getLastBusStop().getName());
         holder.etaTxt.setText("Eta (min): " + Integer.toString(bus.getEta()));
         //holder.lastTimeTxt.setText(bus.getLastTime());
         //holder.latTxt.setText(df.format(bus.getLat()));
