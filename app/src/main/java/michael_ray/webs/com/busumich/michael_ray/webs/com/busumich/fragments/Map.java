@@ -2,6 +2,7 @@ package michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.fragments;
 
 import android.app.ActionBar;
 import android.content.Intent;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -9,6 +10,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -21,9 +25,11 @@ import michael_ray.webs.com.busumich.R;
 import michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.logic.Bus;
 import michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.logic.Parser;
 
-public class Map extends FragmentActivity {
+public class Map extends FragmentActivity implements GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
 
     private GoogleMap mMap;
+    private Location myLocation;
+    private LocationClient mLocationClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +38,20 @@ public class Map extends FragmentActivity {
         ActionBar actionBar = getActionBar();
         actionBar.setTitle(getResources().getString(R.string.app_name));
         actionBar.setDisplayHomeAsUpEnabled(true);
+        mLocationClient = new LocationClient(this, this, this);
         setUpMapIfNeeded();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mLocationClient.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        mLocationClient.disconnect();
+        super.onStop();
     }
 
     @Override
@@ -60,8 +79,9 @@ public class Map extends FragmentActivity {
                 setUpMap(false);
                 return true;
             case R.id.home:
-                Intent goHome = new Intent(this, Home.class);
+                Intent goHome = new Intent(Map.this, Home.class);
                 startActivity(goHome);
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -96,7 +116,23 @@ public class Map extends FragmentActivity {
             for (int i = 0; i < buses.size(); i++)
                 mMap.addMarker(new MarkerOptions().position(new LatLng(buses.get(i).getLat(), buses.get(i).getLon())).title(buses.get(i).getName()));
             if (condition)
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(buses.get(0).getLat(), buses.get(0).getLon()), 15));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(myLocation.getLatitude(), myLocation.getLongitude()), 15));
         }
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    //Google Play Location services methods
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        myLocation = mLocationClient.getLastLocation();
+    }
+
+    @Override
+    public void onDisconnected() { }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) { }
 }
