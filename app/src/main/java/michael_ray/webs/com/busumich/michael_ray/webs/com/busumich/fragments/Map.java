@@ -135,7 +135,7 @@ public class Map extends FragmentActivity implements GooglePlayServicesClient.Co
                         new MarkerOptions()
                                 .position(new LatLng(buses.get(i).getLat(), buses.get(i).getLon()))
                                 .title(buses.get(i).getName())
-                                .icon(BitmapDescriptorFactory.defaultMarker((int)((Integer.parseInt(buses.get(i).getBusRoute().getColor(), 16)/16777215.0)*360)))
+                                .icon(BitmapDescriptorFactory.defaultMarker((int) ((Integer.parseInt(buses.get(i).getBusRoute().getColor(), 16) / 16777215.0) * 360)))
                                 .visible(buses.get(i).getBusRoute().getActive()));
             if (!mapSet) {
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(myLocation.getLatitude(), myLocation.getLongitude()), 15));

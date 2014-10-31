@@ -4,6 +4,7 @@ import android.location.Location;
 import android.util.Log;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -62,6 +63,7 @@ public class Parser {
      * @return boolean if the parser executed correctly without errors
      */
     public boolean calcBuses() {
+        buses.clear();
         try {
             String url = "http://mbus.doublemap.com/map/v2/buses";
             JSONArray json = new JSONArray(pullData(url));
@@ -91,6 +93,7 @@ public class Parser {
      * @return boolean if the parser executed correctly without errors
      */
     public boolean calcRoutes() {
+        routes.clear();
         try {
             String url = "http://mbus.doublemap.com/map/v2/routes";
             JSONArray json = new JSONArray(pullData(url));
@@ -127,6 +130,7 @@ public class Parser {
      * @return boolean if the parser executed correctly without errors
      */
     public boolean calcStops() {
+        stops.clear();
         try {
             String url = "http://mbus.doublemap.com/map/v2/stops";
             JSONArray json = new JSONArray(pullData(url));
@@ -148,6 +152,42 @@ public class Parser {
     }
 
     /**
+     * Gets all of the Buses from the DoubleMap API that are closest to stop
+     * @param stop which is the stop to get the buses from
+     * @return buses which is the array list of closest buses
+     */
+    public ArrayList<Bus> calcClosestBuses(BusStop stop) {
+        ArrayList<Bus> buses = new ArrayList<Bus>();
+        try {
+            String url = "http://mbus.doublemap.com/map/v2/eta?stop=" + Integer.toString(stop.getId());
+            JSONArray json = new JSONObject(pullData(url)).getJSONObject("etas").getJSONObject(Integer.toString(stop.getId())).getJSONArray("etas");
+            for (int i=0; i<json.length(); i++) {
+                String type = json.getJSONObject(i).getString("type");
+                if (!(type.equals("schedule"))) {
+                    int id = json.getJSONObject(i).getInt("bus_id");
+                    int avg = json.getJSONObject(i).getInt("avg");
+                    calcBuses();
+                    Bus bus = null;
+                    for (int j = 0; j < this.buses.size(); j++) {
+                        if (this.buses.get(j).getId() == id) {
+                            bus = this.buses.get(j);
+                            bus.setEta(avg);
+                            break;
+                        }
+                    }
+                    if (bus != null)
+                        buses.add(bus);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.d("BusUMich", "Error parsing ETA json. Method: calcClosestBuses");
+        }
+        Log.d("MyApp",Integer.toString(buses.size()));
+        return buses;
+    }
+
+    /**
      * Assigns the buses the correct route that it is running from the DoubleMap API
      * Modifies: buses (ArrayList<Bus>) and routes (ArrayList<BusRoute>)
      */
@@ -162,15 +202,11 @@ public class Parser {
         }
     }
 
-    private void calcStopDistances(Location location) {
+    public ArrayList<BusStop> getClosestStops(Location location) {
         for (int i=0; i<stops.size(); i++) {
             double distance = Math.sqrt(Math.pow(location.getLatitude() - stops.get(i).getLat(),2) + Math.pow(location.getLongitude() - stops.get(i).getLon(),2));
             stops.get(i).setDistance(distance);
         }
-    }
-
-    public ArrayList<BusStop> getClosestStops(Location location) {
-        calcStopDistances(location);
         Collections.sort(stops);
         return stops;
     }
@@ -189,9 +225,3 @@ public class Parser {
     public void setBuses(ArrayList<Bus> buses) { this.buses = buses; }
     public void setRoutes(ArrayList<BusRoute> routes) { this.routes = routes; }
 }
-
-//Data regarding bus stops:
-//http://mbus.doublemap.com/map/v2/stops
-
-//Data regarding eta of a bus to a bus stop:
-//http://mbus.doublemap.com/map/v2/eta?stop=92

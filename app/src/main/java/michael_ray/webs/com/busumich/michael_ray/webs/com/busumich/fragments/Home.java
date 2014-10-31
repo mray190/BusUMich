@@ -175,7 +175,7 @@ public class Home extends FragmentActivity implements ActionBar.TabListener, Goo
 
         @Override
         protected void onPostExecute(ArrayList<BusStop> stops) {
-            ((HomeFragment) mPagerAdapter.getRegisteredFragment(0)).setData(stops);
+            ((HomeFragment) mPagerAdapter.getRegisteredFragment(0)).setBusStopData(stops);
         }
     }
 

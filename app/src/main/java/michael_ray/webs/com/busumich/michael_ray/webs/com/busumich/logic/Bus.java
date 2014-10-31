@@ -14,8 +14,10 @@ public class Bus implements Serializable {
     private String name;
     private double lat, lon;
     private BusRoute busRoute;
+    private int eta;
 
     public Bus(int id, String name, int heading, int route, int lastStop, int lastTime, double lat, double lon) {
+        this.eta = 0;
         this.id = id;
         this.lat = lat;
         this.lon = lon;
@@ -34,6 +36,7 @@ public class Bus implements Serializable {
     public int getRoute() { return this.route; }
     public int getLastStop() { return this.lastStop; }
     public int getLastTime() { return this.lastTime; }
+    public int getEta() { return this.eta; }
 
     public void setId(int id) { this.id = id; }
     public void setLat(double lat) { this.lat = lat; }
@@ -43,6 +46,7 @@ public class Bus implements Serializable {
     public void setRoute(int route) { this.route = route; }
     public void setLastStop(int lastStop) { this.lastStop = lastStop; }
     public void setLastTime(int lastTime) { this.lastTime = lastTime; }
+    public void setEta(int eta) { this.eta = eta; }
 
     public BusRoute getBusRoute() { return this.busRoute; }
     public void setBusRoute(BusRoute route) { this.busRoute = route; }
