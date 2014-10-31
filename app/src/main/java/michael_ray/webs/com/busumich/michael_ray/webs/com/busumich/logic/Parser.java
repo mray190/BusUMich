@@ -18,6 +18,13 @@ import java.util.ArrayList;
  * @since 10-02-14
  */
 public class Parser {
+    private ArrayList<Bus> buses;
+    private ArrayList<BusRoute> routes;
+
+    public Parser() {
+        this.buses = new ArrayList<Bus>();
+        this.routes = new ArrayList<BusRoute>();
+    }
 
     private String pullData(String url) {
         String outputLine = "";
@@ -36,8 +43,7 @@ public class Parser {
         return outputLine;
     }
 
-    public ArrayList<Bus> getBuses() {
-        ArrayList<Bus> buses = new ArrayList<Bus>();
+    public boolean calcBuses() {
         try {
             String url = "http://mbus.doublemap.com/map/v2/buses";
             JSONArray json = new JSONArray(pullData(url));
@@ -56,12 +62,12 @@ public class Parser {
         } catch (Exception e) {
             e.printStackTrace();
             Log.d("BusUMich", "Error parsing Bus json. Method: getBuses");
+            return false;
         }
-        return buses;
+        return true;
     }
 
-    public ArrayList<BusRoute> getRoutes() {
-        ArrayList<BusRoute> routes = new ArrayList<BusRoute>();
+    public boolean calcRoutes() {
         try {
             String url = "http://mbus.doublemap.com/map/v2/routes";
             JSONArray json = new JSONArray(pullData(url));
@@ -87,9 +93,27 @@ public class Parser {
         } catch (Exception e) {
             e.printStackTrace();
             Log.d("BusUMich", "Error parsing BusRoute json. Method: getRoutes");
+            return false;
         }
-        return routes;
+        return true;
     }
+
+    public void assignRoutes() {
+        for (int i=0; i<buses.size(); i++) {
+            for (int j=0; j<routes.size(); j++) {
+                if (buses.get(i).getRoute() == routes.get(j).getId()) {
+                    buses.get(i).setBusRoute(routes.get(j));
+                    routes.get(j).addBus(buses.get(i), true);
+                }
+            }
+        }
+    }
+
+    public ArrayList<Bus> getBuses() { return this.buses; }
+    public ArrayList<BusRoute> getRoutes() { return this.routes; }
+
+    public void setBuses(ArrayList<Bus> buses) { this.buses = buses; }
+    public void setRoutes(ArrayList<BusRoute> routes) { this.routes = routes; }
 }
 
 //Data regarding bus stops:

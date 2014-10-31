@@ -1,7 +1,5 @@
 package michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.logic;
 
-import android.graphics.Color;
-
 import java.util.ArrayList;
 
 /**
@@ -12,8 +10,8 @@ import java.util.ArrayList;
  * @since 10-09-14
  */
 public class BusRoute {
-    private int id, color;
-    private String name, short_name, description, schedule_url;
+    private int id;
+    private String name, short_name, description, schedule_url, color;
     private boolean active;
     private double[] path;
     private int[] stops;
@@ -24,7 +22,7 @@ public class BusRoute {
         this.name = name;
         this.short_name = short_name;
         this.description = description;
-        this.color = Color.parseColor("#" + color);
+        this.color = color;
         this.path = path;
         this.active = active;
         this.stops = stops;
@@ -33,7 +31,7 @@ public class BusRoute {
     }
 
     public int getId() { return this.id; }
-    public int getColor() { return this.color; }
+    public String getColor() { return this.color; }
     public String getName() { return this.name; }
     public String getShortName() { return this.short_name; }
     public String getDescription() { return this.description; }
@@ -43,7 +41,7 @@ public class BusRoute {
     public int[] getStops() { return this.stops; }
 
     public void setId(int id) { this.id = id; }
-    public void setColor(int color) { this.color = color; }
+    public void setColor(String color) { this.color = color; }
     public void setName(String name) { this.name = name; }
     public void setShortName(String short_name) { this.short_name = short_name; }
     public void setDescription(String description) { this.description = description; }
@@ -53,5 +51,21 @@ public class BusRoute {
 
     public ArrayList<Bus> getBuses() { return this.buses; }
     public void setBuses(ArrayList<Bus> buses) { this.buses = buses; }
+    private boolean isBusInRoute(Bus bus) {
+        for (int i=0; i<buses.size(); i++) {
+            if (bus.getId() == buses.get(i).getId())
+                return true;
+        }
+        return false;
+    }
+    public void addBus(Bus bus, boolean overwrite) {
+        if (isBusInRoute(bus) && overwrite) {
+            for (int i=0; i<buses.size(); i++)
+                if (bus.getId() == buses.get(i).getId()) {
+                    buses.remove(i);
+                    buses.add(i,bus);
+                }
+        }
+    }
 
 }
