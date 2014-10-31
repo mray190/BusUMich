@@ -2,6 +2,7 @@ package michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.fragments;
 
 import android.app.ActionBar;
 import android.content.Intent;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,6 +11,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -24,9 +29,12 @@ import michael_ray.webs.com.busumich.R;
 import michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.logic.Bus;
 import michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.logic.Parser;
 
-public class Map extends FragmentActivity {
+public class Map extends FragmentActivity implements GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
 
     private GoogleMap mMap;
+    private Location myLocation;
+    private LocationClient mLocationClient;
+    private boolean mapSet;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +43,21 @@ public class Map extends FragmentActivity {
         ActionBar actionBar = getActionBar();
         actionBar.setTitle(getResources().getString(R.string.app_name));
         actionBar.setDisplayHomeAsUpEnabled(true);
+        mLocationClient = new LocationClient(this, this, this);
+        mapSet = false;
         setUpMapIfNeeded();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mLocationClient.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        mLocationClient.disconnect();
+        super.onStop();
     }
 
     @Override
@@ -63,7 +85,7 @@ public class Map extends FragmentActivity {
                 setUpMap();
                 return true;
             case R.id.home:
-                Intent goHome = new Intent(this, Home.class);
+                Intent goHome = new Intent(Map.this, Home.class);
                 startActivity(goHome);
         }
         return super.onOptionsItemSelected(item);
@@ -72,8 +94,10 @@ public class Map extends FragmentActivity {
     private void setUpMapIfNeeded() {
         if (mMap == null) {
             mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
-            if (mMap != null)
+            mMap.setMyLocationEnabled(true);
+            if (mMap != null) {
                 setUpMap();
+            }
         }
     }
 
@@ -83,7 +107,7 @@ public class Map extends FragmentActivity {
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
-                handler.post(new Runnable() {
+            handler.post(new Runnable() {
                     public void run() {
                         new Refresh().execute();
                     }
@@ -113,8 +137,25 @@ public class Map extends FragmentActivity {
                                 .title(buses.get(i).getName())
                                 .icon(BitmapDescriptorFactory.defaultMarker((int)((Integer.parseInt(buses.get(i).getBusRoute().getColor(), 16)/16777215.0)*360)))
                                 .visible(buses.get(i).getBusRoute().getActive()));
-            //if (condition)
-                //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(buses.get(0).getLat(), buses.get(0).getLon()), 15));
+            if (!mapSet) {
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(myLocation.getLatitude(), myLocation.getLongitude()), 15));
+                mapSet = true;
+            }
         }
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    //Google Play Location services methods
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        myLocation = mLocationClient.getLastLocation();
+    }
+
+    @Override
+    public void onDisconnected() { }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) { }
 }

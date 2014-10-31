@@ -1,5 +1,6 @@
 package michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.logic;
 
+import android.location.Location;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -9,6 +10,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Parser.java
@@ -20,12 +22,23 @@ import java.util.ArrayList;
 public class Parser {
     private ArrayList<Bus> buses;
     private ArrayList<BusRoute> routes;
+    private ArrayList<BusStop> stops;
 
     public Parser() {
         this.buses = new ArrayList<Bus>();
         this.routes = new ArrayList<BusRoute>();
+        this.stops = new ArrayList<BusStop>();
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    //Logic for parser methods
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Connects to a url and returns the data on that url page
+     * @param url representing the site url (string)
+     * @return string representing the site data
+     */
     private String pullData(String url) {
         String outputLine = "";
         try {
@@ -43,6 +56,11 @@ public class Parser {
         return outputLine;
     }
 
+    /**
+     * Gets all of the Buses from the DoubleMap API
+     * Modifies: buses (ArrayList<Bus>)
+     * @return boolean if the parser executed correctly without errors
+     */
     public boolean calcBuses() {
         try {
             String url = "http://mbus.doublemap.com/map/v2/buses";
@@ -61,12 +79,17 @@ public class Parser {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Log.d("BusUMich", "Error parsing Bus json. Method: getBuses");
+            Log.d("BusUMich", "Error parsing Bus json. Method: calcBuses");
             return false;
         }
         return true;
     }
 
+    /**
+     * Gets all of the Routes from the DoubleMap API
+     * Modifies: routes (ArrayList<BusRoutes>)
+     * @return boolean if the parser executed correctly without errors
+     */
     public boolean calcRoutes() {
         try {
             String url = "http://mbus.doublemap.com/map/v2/routes";
@@ -92,12 +115,42 @@ public class Parser {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Log.d("BusUMich", "Error parsing BusRoute json. Method: getRoutes");
+            Log.d("BusUMich", "Error parsing BusRoute json. Method: calcRoutes");
             return false;
         }
         return true;
     }
 
+    /**
+     * Gets all of the Stops from the DoubleMap API
+     * Modifies: stops (ArrayList<BusStop>)
+     * @return boolean if the parser executed correctly without errors
+     */
+    public boolean calcStops() {
+        try {
+            String url = "http://mbus.doublemap.com/map/v2/stops";
+            JSONArray json = new JSONArray(pullData(url));
+            for (int i=0; i<json.length(); i++) {
+                int id = json.getJSONObject(i).getInt("id");
+                String name = json.getJSONObject(i).getString("name");
+                String description = json.getJSONObject(i).getString("description");
+                double lat = json.getJSONObject(i).getDouble("lat");
+                double lon = json.getJSONObject(i).getDouble("lon");
+                BusStop busstop = new BusStop(id,name,description,lat,lon);
+                stops.add(busstop);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.d("BusUMich", "Error parsing BusStop json. Method: calcStops");
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Assigns the buses the correct route that it is running from the DoubleMap API
+     * Modifies: buses (ArrayList<Bus>) and routes (ArrayList<BusRoute>)
+     */
     public void assignRoutes() {
         for (int i=0; i<buses.size(); i++) {
             for (int j=0; j<routes.size(); j++) {
@@ -109,8 +162,29 @@ public class Parser {
         }
     }
 
+    private void calcStopDistances(Location location) {
+        for (int i=0; i<stops.size(); i++) {
+            double distance = Math.sqrt(Math.pow(location.getLatitude() - stops.get(i).getLat(),2) + Math.pow(location.getLongitude() - stops.get(i).getLon(),2));
+            stops.get(i).setDistance(distance);
+        }
+    }
+
+    public ArrayList<BusStop> getClosestStops(Location location) {
+        calcStopDistances(location);
+        Collections.sort(stops);
+        return stops;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    //Getter methods
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
     public ArrayList<Bus> getBuses() { return this.buses; }
     public ArrayList<BusRoute> getRoutes() { return this.routes; }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    //Setter methods
+    ////////////////////////////////////////////////////////////////////////////////////////////////
 
     public void setBuses(ArrayList<Bus> buses) { this.buses = buses; }
     public void setRoutes(ArrayList<BusRoute> routes) { this.routes = routes; }
