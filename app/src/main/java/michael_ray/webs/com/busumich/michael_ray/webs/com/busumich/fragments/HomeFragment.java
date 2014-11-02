@@ -31,6 +31,7 @@ public class HomeFragment extends ListFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getListView().setCacheColorHint(Color.TRANSPARENT);
+        //getListView().setBackgroundColor(Color.parseColor("#000000"));
     }
 
     public void setBusStopData(ArrayList<BusStop> stops) {

@@ -3,10 +3,11 @@
 
     <string name="app_name">BusUMich</string>
     <string name="action_settings">Settings</string>
-    <string name="tab1">Tab 1</string>
-    <string name="tab2">Tab 2</string>
-    <string name="tab3">Tab 3</string>
+    <string name="tab1">Nearest Stops</string>
+    <string name="tab2">Search</string>
+    <string name="tab3">Favorites</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_map">Map</string>
+    <string name="banner_ad_unit_id">ca-app-pub-6121703412020588/6259210152</string>
 
 </resources>

@@ -14,9 +14,6 @@ import java.util.ArrayList;
 import michael_ray.webs.com.busumich.R;
 import michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.logic.Bus;
 
-/**
- * Created by mray on 31/10/14.
- */
 public class BusAdapter extends ArrayAdapter<Bus> {
     Context context;
     int layoutResourceId;
@@ -58,7 +55,7 @@ public class BusAdapter extends ArrayAdapter<Bus> {
         //holder.headingTxt.setText(bus.getHeading());
         holder.routeTxt.setText("Route: " + bus.getBusRoute().getName());
         holder.lastStopTxt.setText("Last stop: " + bus.getLastBusStop().getName());
-        holder.etaTxt.setText("Eta (min): " + Integer.toString(bus.getEta()));
+        holder.etaTxt.setText("ETA: " + Integer.toString(bus.getEta()) + " min");
         //holder.lastTimeTxt.setText(bus.getLastTime());
         //holder.latTxt.setText(df.format(bus.getLat()));
         //holder.lonTxt.setText(df.format(bus.getLon()));
