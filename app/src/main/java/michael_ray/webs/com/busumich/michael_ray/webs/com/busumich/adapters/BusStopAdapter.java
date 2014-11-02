@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import java.text.DecimalFormat;
@@ -38,6 +39,7 @@ public class BusStopAdapter extends ArrayAdapter<BusStop> {
             holder = new BusStopHolder();
             holder.nameTxt = (TextView)row.findViewById(R.id.nameTxt);
             holder.descriptionTxt = (TextView)row.findViewById(R.id.descTxt);
+            holder.checkbox = (CheckBox)row.findViewById(R.id.favorite);
             //holder.latTxt = (TextView)row.findViewById(R.id.latTxt);
             //holder.lonTxt = (TextView)row.findViewById(R.id.lonTxt);
             row.setTag(holder);
@@ -47,6 +49,7 @@ public class BusStopAdapter extends ArrayAdapter<BusStop> {
         BusStop stop = data.get(position);
         holder.nameTxt.setText(stop.getName());
         holder.descriptionTxt.setText(stop.getDescription());
+        holder.checkbox.setChecked(false);
         //holder.latTxt.setText(df.format(stop.getLat()));
         //holder.lonTxt.setText(df.format(stop.getLon()));
         return row;
@@ -54,5 +57,6 @@ public class BusStopAdapter extends ArrayAdapter<BusStop> {
 
     static class BusStopHolder {
         TextView nameTxt, descriptionTxt, latTxt, lonTxt;
+        CheckBox checkbox;
     }
 }

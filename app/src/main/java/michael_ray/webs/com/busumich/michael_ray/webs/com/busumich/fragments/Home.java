@@ -161,6 +161,18 @@ public class Home extends FragmentActivity implements ActionBar.TabListener, Goo
         super.onStop();
     }
 
+    @Override
+    public void onBackPressed() {
+        if (mPager.getCurrentItem()==0) {
+            if (((DisplayFragment) mPagerAdapter.getRegisteredFragment(0)).getLayer()==2) {
+                Refresh refresh = new Refresh();
+                refresh.execute();
+            } else
+                super.onBackPressed();
+        } else
+            super.onBackPressed();
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //Async Task methods
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -174,7 +186,7 @@ public class Home extends FragmentActivity implements ActionBar.TabListener, Goo
 
         @Override
         protected void onPostExecute(ArrayList<BusStop> stops) {
-            ((HomeFragment) mPagerAdapter.getRegisteredFragment(0)).setBusStopData(stops);
+            ((DisplayFragment) mPagerAdapter.getRegisteredFragment(0)).setBusStopData(stops);
         }
     }
 

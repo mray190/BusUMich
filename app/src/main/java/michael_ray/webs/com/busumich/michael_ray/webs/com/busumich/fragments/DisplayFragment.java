@@ -16,15 +16,13 @@ import michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.logic.Bus;
 import michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.logic.BusStop;
 import michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.logic.Parser;
 
-public class HomeFragment extends ListFragment {
+public class DisplayFragment extends ListFragment {
 
     private int layer;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         layer = 0;
-        BusStopAdapter adapter = new BusStopAdapter(getActivity(), R.layout.row_busstop,new ArrayList<BusStop>());
-        setListAdapter(adapter);
     }
 
     @Override
@@ -39,6 +37,9 @@ public class HomeFragment extends ListFragment {
         setListAdapter(adapter);
         layer = 1;
     }
+
+    public void setLayer(int layer) { this.layer = layer; }
+    public int getLayer() { return this.layer; }
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {

@@ -8,7 +8,7 @@ import android.support.v4.view.ViewPager;
 import android.util.SparseArray;
 import android.view.ViewGroup;
 
-import michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.fragments.HomeFragment;
+import michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.fragments.DisplayFragment;
 
 public class TabsAdapter extends FragmentPagerAdapter {
     private SparseArray<Fragment> registeredFragments = new SparseArray<Fragment>();
@@ -25,15 +25,15 @@ public class TabsAdapter extends FragmentPagerAdapter {
         data.putInt("current_page", position+1);
         switch(position){
             case 0:
-                HomeFragment frag1 = new HomeFragment();
+                DisplayFragment frag1 = new DisplayFragment();
                 frag1.setArguments(data);
                 return frag1;
             case 1:
-                HomeFragment frag2 = new HomeFragment();
+                DisplayFragment frag2 = new DisplayFragment();
                 frag2.setArguments(data);
                 return frag2;
             case 2:
-                HomeFragment frag3 = new HomeFragment();
+                DisplayFragment frag3 = new DisplayFragment();
                 frag3.setArguments(data);
                 return frag3;
         }
