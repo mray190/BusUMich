@@ -95,6 +95,7 @@ public class Map extends FragmentActivity implements GooglePlayServicesClient.Co
         if (mMap == null) {
             mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
             mMap.setMyLocationEnabled(true);
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(42.276946, -83.738220), 14));
             if (mMap != null) {
                 setUpMap();
             }
@@ -120,7 +121,7 @@ public class Map extends FragmentActivity implements GooglePlayServicesClient.Co
     class Refresh extends AsyncTask<Void, Void, ArrayList<Bus>> {
         @Override
         protected ArrayList<Bus> doInBackground(Void...params) {
-            Parser parser = new Parser();
+            Parser parser = new Parser(getApplicationContext());
             return parser.getBuses();
         }
 
@@ -135,7 +136,7 @@ public class Map extends FragmentActivity implements GooglePlayServicesClient.Co
                                 .icon(BitmapDescriptorFactory.defaultMarker((int) ((Integer.parseInt(buses.get(i).getBusRoute().getColor(), 16) / 16777215.0) * 360)))
                                 .visible(buses.get(i).getBusRoute().getActive()));
             if (!mapSet) {
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(myLocation.getLatitude(), myLocation.getLongitude()), 15));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(myLocation.getLatitude(), myLocation.getLongitude()), 17));
                 mapSet = true;
             }
         }

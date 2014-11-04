@@ -12,23 +12,15 @@ public class BusStop implements Comparable {
     private double lat, lon;
     private String name, description;
     private double distance;
-
-    public BusStop() {
-        this.distance = 0;
-        this.id = 137;
-        this.lat = 42.277683;
-        this.lon = -83.73494;
-        this.name = "CC Little";
-        this.description = "Central Campus Transit Center";
-    }
+    private boolean favorite;
 
     public BusStop(int id, String name, String description, double lat, double lon) {
-        this.distance = 0;
         this.id = id;
         this.lat = lat;
         this.lon = lon;
         this.name = name;
         this.description = description;
+        this.favorite = false;
     }
 
     public int getId() { return this.id; }
@@ -36,14 +28,18 @@ public class BusStop implements Comparable {
     public double getLon() { return this.lon; }
     public String getName() { return this.name; }
     public String getDescription() { return this.description; }
-    public double getDistance() { return this.distance; }
 
     public void setId(int id) { this.id = id; }
     public void setLat(double lat) { this.lat = lat; }
     public void setLon(double lon) { this.lon = lon; }
     public void setName(String name) { this.name = name; }
     public void setDescription(String description) { this.description = description; }
+
+    public double getDistance() { return this.distance; }
     public void setDistance(double distance) { this.distance = distance; }
+
+    public boolean getFavorite() { return this.favorite; }
+    public void setFavorite(boolean favorite) { this.favorite = favorite; }
 
     @Override
     public int compareTo(Object other){

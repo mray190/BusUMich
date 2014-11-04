@@ -38,6 +38,7 @@ public class Home extends FragmentActivity implements ActionBar.TabListener, Goo
     private LocationClient mLocationClient;
     private Location myLocation;
     private FragmentManager fm;
+    private static final int NEAR = 0, FAVORITE = 1, SEARCH = 2;
 
     /**
 	 * Manages the navigation, fragments and panels for swipe tabs and action bar menus
@@ -55,7 +56,7 @@ public class Home extends FragmentActivity implements ActionBar.TabListener, Goo
         //Creates a Pager view and sets a listener and adapter to monitor swipes
         mPagerAdapter = new TabsAdapter(fm);
         mPager.setAdapter(mPagerAdapter);
-        mPager.setOffscreenPageLimit(5);
+        mPager.setOffscreenPageLimit(3);
 
         mPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             public void onPageSelected(int position) {
@@ -100,6 +101,11 @@ public class Home extends FragmentActivity implements ActionBar.TabListener, Goo
                 startActivity(intent);
                 return true;
             case R.id.action_refresh:
+                myLocation = mLocationClient.getLastLocation();
+                LoadNear task = new LoadNear();
+                task.execute();
+                LoadFavorites task2 = new LoadFavorites();
+                task2.execute();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -127,8 +133,8 @@ public class Home extends FragmentActivity implements ActionBar.TabListener, Goo
     @Override
     public void onConnected(Bundle bundle) {
         myLocation = mLocationClient.getLastLocation();
-        Refresh refresh = new Refresh();
-        refresh.execute();
+        LoadNear task = new LoadNear();
+        task.execute();
     }
 
     @Override
@@ -147,6 +153,8 @@ public class Home extends FragmentActivity implements ActionBar.TabListener, Goo
         setContentView(R.layout.activity_home);
         mLocationClient = new LocationClient(this, this, this);
         managePageNavigation();
+        LoadFavorites task = new LoadFavorites();
+        task.execute();
     }
 
     @Override
@@ -163,12 +171,14 @@ public class Home extends FragmentActivity implements ActionBar.TabListener, Goo
 
     @Override
     public void onBackPressed() {
-        if (mPager.getCurrentItem()==0) {
-            if (((DisplayFragment) mPagerAdapter.getRegisteredFragment(0)).getLayer()==2) {
-                Refresh refresh = new Refresh();
-                refresh.execute();
-            } else
-                super.onBackPressed();
+        if (((DisplayFragment) mPagerAdapter.getRegisteredFragment(mPager.getCurrentItem())).getLayer()==2) {
+            if (mPager.getCurrentItem() == NEAR) {
+                LoadNear task = new LoadNear();
+                task.execute();
+            } else if (mPager.getCurrentItem() == FAVORITE) {
+                LoadFavorites task = new LoadFavorites();
+                task.execute();
+            }
         } else
             super.onBackPressed();
     }
@@ -177,16 +187,29 @@ public class Home extends FragmentActivity implements ActionBar.TabListener, Goo
     //Async Task methods
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    class Refresh extends AsyncTask<Void, Void, ArrayList<BusStop>> {
+    class LoadNear extends AsyncTask<Void, Void, ArrayList<BusStop>> {
         @Override
         protected ArrayList<BusStop> doInBackground(Void...params) {
-            Parser parser = new Parser();
+            Parser parser = new Parser(getApplicationContext());
             return parser.getClosestStops(myLocation);
         }
 
         @Override
         protected void onPostExecute(ArrayList<BusStop> stops) {
-            ((DisplayFragment) mPagerAdapter.getRegisteredFragment(0)).setBusStopData(stops);
+            ((DisplayFragment) mPagerAdapter.getRegisteredFragment(NEAR)).setBusStopData(stops);
+        }
+    }
+
+    class LoadFavorites extends AsyncTask<Integer, Void, ArrayList<BusStop>> {
+        @Override
+        protected ArrayList<BusStop> doInBackground(Integer...params) {
+            Parser parser = new Parser(getApplicationContext());
+            return parser.getFavorites();
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<BusStop> stops) {
+            ((DisplayFragment) mPagerAdapter.getRegisteredFragment(FAVORITE)).setBusStopData(stops);
         }
     }
 

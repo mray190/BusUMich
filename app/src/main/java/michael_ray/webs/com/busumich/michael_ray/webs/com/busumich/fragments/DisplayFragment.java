@@ -53,7 +53,7 @@ public class DisplayFragment extends ListFragment {
     class Refresh extends AsyncTask<BusStop, Void, ArrayList<Bus>> {
         @Override
         protected ArrayList<Bus> doInBackground(BusStop...params) {
-            Parser parser = new Parser();
+            Parser parser = new Parser(getActivity());
             return parser.getClosestBuses(params[0]);
         }
 

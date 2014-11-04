@@ -1,5 +1,6 @@
 package michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.logic;
 
+import android.content.Context;
 import android.location.Location;
 import android.util.Log;
 
@@ -7,6 +8,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -22,9 +26,75 @@ import java.util.Collections;
  */
 public class Parser {
 
+    private Context context;
+
+    public Parser(Context context) {
+        this.context = context;
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //Logic for parser methods
     ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    private ArrayList<Integer> readData() {
+        ArrayList<Integer> data = new ArrayList<Integer>();
+        try {
+            File file = context.getFileStreamPath("favorites");
+            if (!file.exists())
+                file.createNewFile();
+            FileInputStream fis = context.openFileInput("favorites");
+            InputStreamReader inputStreamReader = new InputStreamReader(fis);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                data.add(Integer.parseInt(line));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.d("BusUMich","Error reading data from the favorites file");
+        }
+        return data;
+    }
+
+    private ArrayList<BusStop> syncFavoriteData(ArrayList<BusStop> stops, ArrayList<Integer> favorites) {
+        for (int i=0; i<stops.size(); i++) {
+            for (int j=0; j<favorites.size(); j++) {
+                if (stops.get(i).getId()==favorites.get(j)) {
+                    stops.get(i).setFavorite(true);
+                    break;
+                }
+            }
+        }
+        return stops;
+    }
+
+    private void writeData(ArrayList<Integer> output) {
+        try {
+            FileOutputStream fos = context.openFileOutput("favorites",Context.MODE_PRIVATE);
+            for (int i=0; i<output.size(); i++)
+                fos.write((Integer.toString(output.get(i))+"\n").getBytes());
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.d("BusUMich","Error writing to the favorites file");
+        }
+    }
+
+    public void removeFavorite(BusStop stop) {
+        ArrayList<Integer> data = readData();
+        for (int i=0; i<data.size(); i++) {
+            if (data.get(i) == stop.getId()) {
+                data.remove(i);
+                writeData(data);
+                return;
+            }
+        }
+    }
+
+    public void addFavorite(BusStop stop) {
+        ArrayList<Integer> favorites = readData();
+        favorites.add(stop.getId());
+        writeData(favorites);
+    }
 
     /**
      * Connects to a url and returns the data on that url page
@@ -238,7 +308,16 @@ public class Parser {
 
     public ArrayList<Bus> getBuses() { return correlateBuses(calcBuses(),calcRoutes(),calcStops()); }
     public ArrayList<BusRoute> getRoutes() { return correlateRoutes(calcBuses(),calcRoutes()); }
-    public ArrayList<BusStop> getStops() { return calcStops(); }
+    public ArrayList<BusStop> getStops() { return syncFavoriteData(calcStops(),readData()); }
     public ArrayList<BusStop> getClosestStops(Location location) { return calcClosestStops(location, getStops()); }
     public ArrayList<Bus> getClosestBuses(BusStop stop) { return calcClosestBuses(stop,getBuses());}
+    public ArrayList<BusStop> getFavorites() {
+        ArrayList<BusStop> full = getStops();
+        ArrayList<BusStop> filtered = new ArrayList<BusStop>();
+        for (int i=0; i<full.size(); i++) {
+            if (full.get(i).getFavorite())
+                filtered.add(full.get(i));
+        }
+        return filtered;
+    }
 }
