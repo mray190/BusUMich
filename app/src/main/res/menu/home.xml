@@ -2,12 +2,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".Home" >
-    <item android:id="@+id/action_map"
-        android:title="Map"
-        android:icon="@drawable/ic_map"
-        android:showAsAction="always"
-        android:orderInCategory="99"
-        tools:ignore="AppCompatResource" />
+    <item android:id="@+id/search"
+        android:title="Search"
+        android:icon="@drawable/ic_search"
+        android:showAsAction="collapseActionView|always"
+        android:actionViewClass="android.widget.SearchView"
+        android:orderInCategory="98"
+        tools:ignore="AppCompatResource"/>
     <item android:id="@+id/action_settings"
         android:title="@string/action_settings"
         android:orderInCategory="100"
@@ -16,6 +17,6 @@
         android:title="Refresh"
         android:icon="@drawable/ic_refresh"
         android:showAsAction="always"
-        android:orderInCategory="98"
+        android:orderInCategory="97"
         tools:ignore="AppCompatResource" />
 </menu>

@@ -1,15 +1,13 @@
 package michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.fragments;
 
-import android.app.ActionBar;
-import android.content.Intent;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.FragmentActivity;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -29,7 +27,7 @@ import michael_ray.webs.com.busumich.R;
 import michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.logic.Bus;
 import michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.logic.Parser;
 
-public class Map extends FragmentActivity implements GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
+public class MapFragment extends Fragment implements GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
 
     private GoogleMap mMap;
     private Location myLocation;
@@ -37,68 +35,31 @@ public class Map extends FragmentActivity implements GooglePlayServicesClient.Co
     private boolean mapSet;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_map, container, false);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_map);
-        ActionBar actionBar = getActionBar();
-        actionBar.setTitle(getResources().getString(R.string.app_name));
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        mLocationClient = new LocationClient(this, this, this);
+        mLocationClient = new LocationClient(getActivity(), this, this);
         mapSet = false;
         setUpMapIfNeeded();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mLocationClient.connect();
-    }
-
-    @Override
-    protected void onStop() {
-        mLocationClient.disconnect();
-        super.onStop();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        //Create the menu in the action bar for the interface
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.home, menu);
-        return true;
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        setUpMapIfNeeded();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_settings:
-                return true;
-            case R.id.action_map:
-                return true;
-            case R.id.action_refresh:
-                setUpMap();
-                return true;
-            case R.id.home:
-                Intent goHome = new Intent(Map.this, Home.class);
-                startActivity(goHome);
-        }
-        return super.onOptionsItemSelected(item);
+        return view;
     }
 
     private void setUpMapIfNeeded() {
         if (mMap == null) {
-            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
+            mMap = ((SupportMapFragment)Home.fm.findFragmentById(R.id.location_map)).getMap();
             mMap.setMyLocationEnabled(true);
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(42.276946, -83.738220), 14));
             if (mMap != null) {
                 setUpMap();
             }
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (mMap != null) {
+            mMap = null;
         }
     }
 
@@ -109,19 +70,19 @@ public class Map extends FragmentActivity implements GooglePlayServicesClient.Co
             @Override
             public void run() {
             handler.post(new Runnable() {
-                    public void run() {
-                        new Refresh().execute();
-                    }
-                });
+                public void run() {
+                    //new MapRefresh().execute();
+                }
+            });
             }
         };
         timer.schedule(task, 0, 4000);
     }
 
-    class Refresh extends AsyncTask<Void, Void, ArrayList<Bus>> {
+    class MapRefresh extends AsyncTask<Void, Void, ArrayList<Bus>> {
         @Override
         protected ArrayList<Bus> doInBackground(Void...params) {
-            Parser parser = new Parser(getApplicationContext());
+            Parser parser = new Parser(getActivity());
             return parser.getBuses();
         }
 
@@ -141,10 +102,6 @@ public class Map extends FragmentActivity implements GooglePlayServicesClient.Co
             }
         }
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    //Google Play Location services methods
-    ////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public void onConnected(Bundle bundle) {

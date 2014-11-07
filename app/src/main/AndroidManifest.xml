@@ -15,9 +15,18 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value="michael_ray.webs.com.busumich.fragments.Home" />
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name=".michael_ray.webs.com.busumich.fragments.Map"
+            android:name=".michael_ray.webs.com.busumich.fragments.MapFragment"
             android:label="@string/title_activity_map" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

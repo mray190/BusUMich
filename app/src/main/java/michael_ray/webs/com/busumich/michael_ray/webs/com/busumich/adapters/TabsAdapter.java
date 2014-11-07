@@ -9,6 +9,7 @@ import android.util.SparseArray;
 import android.view.ViewGroup;
 
 import michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.fragments.DisplayFragment;
+import michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.fragments.MapFragment;
 
 public class TabsAdapter extends FragmentPagerAdapter {
     private SparseArray<Fragment> registeredFragments = new SparseArray<Fragment>();
@@ -33,7 +34,7 @@ public class TabsAdapter extends FragmentPagerAdapter {
                 frag2.setArguments(data);
                 return frag2;
             case 2:
-                DisplayFragment frag3 = new DisplayFragment();
+                MapFragment frag3 = new MapFragment();
                 frag3.setArguments(data);
                 return frag3;
         }

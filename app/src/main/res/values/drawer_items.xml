@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="drawer_items">
+        <item>Blue Bus</item>
+        <item>Uber</item>
+        <item>The Ride</item>
+        <item>Safe Ride</item>
+        <item>ZipCar</item>
+    </string-array>
+</resources>

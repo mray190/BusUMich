@@ -5,8 +5,11 @@
     <string name="action_settings">Settings</string>
     <string name="tab1">Nearest</string>
     <string name="tab2">Favorites</string>
-    <string name="tab3">Search</string>
+    <string name="tab3">Map</string>
     <string name="title_activity_map">Map</string>
     <string name="banner_ad_unit_id">ca-app-pub-6121703412020588/6259210152</string>
+    <string name="search_hint">Search stops/routes</string>
+    <string name="drawer_open">Open</string>
+    <string name="drawer_close">Close</string>
 
 </resources>
