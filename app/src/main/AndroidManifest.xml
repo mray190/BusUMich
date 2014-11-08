@@ -25,13 +25,6 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-        <activity
-            android:name=".michael_ray.webs.com.busumich.fragments.MapFragment"
-            android:label="@string/title_activity_map" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.fragments.Home" />
-        </activity>
 
         <activity android:name="com.google.android.gms.ads.AdActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
