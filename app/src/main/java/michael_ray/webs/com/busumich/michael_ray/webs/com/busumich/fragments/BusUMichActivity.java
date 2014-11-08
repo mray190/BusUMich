@@ -1,23 +1,30 @@
 package michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.fragments;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.Configuration;
+import android.graphics.drawable.GradientDrawable;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SearchView;
 
@@ -28,27 +35,28 @@ import com.google.android.gms.location.LocationClient;
 import java.util.ArrayList;
 
 import michael_ray.webs.com.busumich.R;
+import michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.adapters.NaviAdapter;
 import michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.adapters.TabsAdapter;
 import michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.logic.BusStop;
 import michael_ray.webs.com.busumich.michael_ray.webs.com.busumich.logic.Parser;
 
 /**
- * Home.java
- * Home screen that manages the fragments and general activity
+ * BusUMichActivity.java
+ * BusUMichActivity screen that manages the fragments and general activity
  * @author Michael Ray
  * @version 1
  * @since 10-30-14
  */
-public class Home extends FragmentActivity implements ActionBar.TabListener, GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
+public class BusUMichActivity extends FragmentActivity implements ActionBar.TabListener, GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
 
     private ViewPager mPager;
     private DrawerLayout mDrawer;
     private TabsAdapter mPagerAdapter;
+    private ListView mDrawerList;
     private ActionBar actionBar;
     private LocationClient mLocationClient;
     private ActionBarDrawerToggle mDrawerToggle;
     private Location myLocation;
-    private MenuItem searchItem;
     public static FragmentManager fm;
     private static final int NEAR = 0, FAVORITE = 1, MAP = 2;
 
@@ -65,10 +73,24 @@ public class Home extends FragmentActivity implements ActionBar.TabListener, Goo
         actionBar.setHomeButtonEnabled(true);
 
         mDrawer = (DrawerLayout)findViewById(R.id.drawer_layout);
-        ListView mDrawerList = (ListView)findViewById(R.id.left_drawer);
+        mDrawerList = (ListView)findViewById(R.id.left_drawer);
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
         String[] drawer_items = getResources().getStringArray(R.array.drawer_items);
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, drawer_items));
-        mDrawerToggle = new ActionBarDrawerToggle(this,mDrawer,R.drawable.ic_navi_bar,R.string.drawer_open,R.string.drawer_close);
+        NaviAdapter adapter = new NaviAdapter(this,R.layout.row_navigation,drawer_items);
+        mDrawerList.setAdapter(adapter);
+        int[] colors = {0xFF888888,0xFFFFFFFF,0xFF888888};
+        mDrawerList.setDivider(new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT,colors));
+        mDrawerList.setDividerHeight(2);
+        mDrawerToggle = new ActionBarDrawerToggle(this,mDrawer,R.drawable.ic_navi_bar,R.string.drawer_open,R.string.drawer_close) {
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                invalidateOptionsMenu();
+            }
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                invalidateOptionsMenu();
+            }
+        };
         mDrawer.setDrawerListener(mDrawerToggle);
 
         fm = getSupportFragmentManager();
@@ -98,6 +120,19 @@ public class Home extends FragmentActivity implements ActionBar.TabListener, Goo
         actionBar.addTab(tab2.setTabListener(this));
         ActionBar.Tab tab3 = actionBar.newTab().setText(getResources().getString(R.string.tab3));
         actionBar.addTab(tab3.setTabListener(this));
+    }
+
+    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView parent, View view, int position, long id) {
+            String itemClicked = (String)mDrawerList.getAdapter().getItem(position);
+            if (itemClicked.equals("Blue Bus")) {
+                mDrawer.closeDrawers();
+            } else {
+                ShowMessage dialog = new ShowMessage();
+                dialog.show(fm, "dialog");
+            }
+        }
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -164,15 +199,24 @@ public class Home extends FragmentActivity implements ActionBar.TabListener, Goo
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        // If the nav drawer is open, hide action items related to the content view
+        boolean drawerOpen = mDrawer.isDrawerOpen(mDrawerList);
+        menu.findItem(R.id.search).setVisible(!drawerOpen);
+        menu.findItem(R.id.action_refresh).setVisible(!drawerOpen);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //Create the menu in the action bar for the interface
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.home, menu);
 
-        searchItem = menu.findItem(R.id.search);
+        MenuItem searchItem = menu.findItem(R.id.search);
 
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView)searchItem.getActionView();
+        SearchView searchView = (SearchView) searchItem.getActionView();
         if (null != searchView ) {
             searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
             searchView.setIconifiedByDefault(false);
@@ -214,19 +258,17 @@ public class Home extends FragmentActivity implements ActionBar.TabListener, Goo
         return super.onOptionsItemSelected(item);
     }
 
-    private TextWatcher filterTextWatcher = new TextWatcher()
-    {
-        public void afterTextChanged(Editable s)
-        {
+    private TextWatcher filterTextWatcher = new TextWatcher() {
+        public void afterTextChanged(Editable s) {
+
         }
 
-        public void beforeTextChanged(CharSequence s, int start, int count, int after)
-        {
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
         }
 
-        public void onTextChanged(CharSequence s, int start, int before, int count)
-        {
-            // your search logic here
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
         }
     };
 
@@ -288,7 +330,22 @@ public class Home extends FragmentActivity implements ActionBar.TabListener, Goo
 
         @Override
         protected void onPostExecute(ArrayList<BusStop> stops) {
-            ((DisplayFragment) mPagerAdapter.getRegisteredFragment(FAVORITE)).setBusStopData(stops);
+            if (mPagerAdapter.getRegisteredFragment(FAVORITE)!=null)
+                ((DisplayFragment) mPagerAdapter.getRegisteredFragment(FAVORITE)).setBusStopData(stops);
+        }
+    }
+
+    public static class ShowMessage extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the Builder class for convenient dialog construction
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            LayoutInflater inflater = getActivity().getLayoutInflater();
+            builder.setView(inflater.inflate(R.layout.fragment_message, null))
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) { }
+                    });
+            return builder.create();
         }
     }
 

@@ -46,7 +46,7 @@ public class MapFragment extends Fragment implements GooglePlayServicesClient.Co
 
     private void setUpMapIfNeeded() {
         if (mMap == null) {
-            mMap = ((SupportMapFragment)Home.fm.findFragmentById(R.id.location_map)).getMap();
+            mMap = ((SupportMapFragment) BusUMichActivity.fm.findFragmentById(R.id.location_map)).getMap();
             mMap.setMyLocationEnabled(true);
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(42.276946, -83.738220), 14));
             if (mMap != null) {

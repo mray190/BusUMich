@@ -3,7 +3,7 @@
     <string-array name="drawer_items">
         <item>Blue Bus</item>
         <item>Uber</item>
-        <item>The Ride</item>
+        <item>TheRide</item>
         <item>Safe Ride</item>
         <item>ZipCar</item>
     </string-array>
